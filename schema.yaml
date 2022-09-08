@@ -1,0 +1,147 @@
+---
+hostname: str(required=False)
+features: list(enum('device', 'bfd', 'bgp', 'dhcp', 'evpn', 'fabric_forwarding', 'hsrp', 'interface_vlan', 'isis', 'lacp', 'lldp', 'macsec', 'netflow', 'nv_overlay', 'ospf', 'ospfv3', 'pim', 'ptp', 'pvlan', 'ssh', 'tacacs', 'telnet', 'udld', 'vn_segment', 'vpc'), required=False)
+fabric_forwarding: include('fabric_forwarding', required=False)
+evpn: include('evpn', required=False)
+ospf: list(include('ospf'), required=False)
+bgp: include('bgp', required=False)
+vrfs: list(include('vrf'))
+interfaces_ethernet: list(include('interface_ethernet'), required=False)
+interfaces_loopback: list(include('interface_loopback'), required=False)
+interfaces_vlan: list(include('interface_vlan'), required=False)
+interface_nve: include('interface_nve', required=False)
+vlans: list(include('vlan', required=False))
+
+---
+fabric_forwarding:
+  anycast_gateway_mac: str()
+  anycast_gateway_vlans: list(int(min=1, max=4094))
+
+---
+evpn:
+  vnis: list(include('evpn_vni'))
+
+---
+evpn_vni:
+  vni: int()
+  route_distinguisher: str()
+  route_target_both_auto: bool(required=False)
+
+---
+ospf:
+  name: any(str(), int())
+  vrfs: list(include('ospf_vrf'), required=False)
+
+---
+ospf_vrf:
+  vrf: str()
+  router_id: str(required=False)
+  bandwidth_reference: int(required=False)
+  banwidth_reference_unit: enum('mbps', 'gbps', required=False)
+  interfaces: list(include('ospf_interface'), required=False)
+
+---
+ospf_interface:
+  interface: str()
+  area: str()
+  network_type: enum('unspecified', 'p2p', 'bcast', required=False)
+
+---
+bgp:
+  asn: int()
+  enhanced_error_handling: bool(required=False)
+  template_peers: list(include('bgp_template_peer'), required=False)
+  vrfs: list(include('bgp_vrf'), required=False)
+
+---
+bgp_template_peer:
+  name: str()
+  asn: int(required=False)
+  description: str(required=False)
+  source_interface: str(required=False)
+  address_families: list(include('bgp_address_family'), required=False)
+
+---
+bgp_address_family:
+  address_family: enum('ipv4_unicast', 'ipv6_unicast', 'l2vpn_evpn')
+  send_community_standard: bool(required=False)
+  send_community_extended: bool(required=False)
+
+---
+bgp_vrf:
+  vrf: str()
+  router_id: str(required=False)
+  log_neighbor_changes: bool(required=False)
+  graceful_restart_stalepath_time: int(required=False)
+  neighbors: list(include('bgp_neighbor'), required=False)
+
+---
+bgp_neighbor:
+  ip: str(required=False)
+  description: str(required=False)
+  asn: int(required=False)
+  address_families: list(include('bgp_address_family'), required=False)
+  inherit_peer: str(required=False)
+
+---
+vrf:
+  name: str()
+  vni: int(required=False)
+  route_distinguisher: str(required=False)
+  address_families: list(include('vrf_address_family'), required=False)
+
+---
+vrf_address_family:
+  address_family: str()
+  route_target_both_auto: bool(required=False)
+  route_target_both_auto_evpn: bool(required=False)
+
+---
+interface_ethernet:
+  id: str()
+  admin_state: enum(True, False, required=False)
+  description: str(required=False)
+  layer3: bool(required=False)
+  link_debounce_down: int(required=False)
+  mtu: int(required=False)
+  ipv4_address: str(required=False)
+  urpf: enum('loose', 'strict', required=False)
+  vrf: str(required=False)
+
+---
+interface_loopback:
+  id: int()
+  admin_state: enum(True, False, required=False)
+  description: str(required=False)
+  ipv4_address: str(required=False)
+  vrf: str(required=False)
+
+---
+interface_vlan:
+  id: int()
+  admin_state: enum(True, False, required=False)
+  description: str(required=False)
+  mtu: int(required=False)
+  ipv4_address: str(required=False)
+  ip_forward: enum(True, False, required=False)
+  vrf: str(required=False)
+
+---
+interface_nve:
+  admin_state: enum(True, False, required=False)
+  hold_down_time: int(required=False)
+  host_reachability_protocol: enum('bgp', 'static', required=False)
+  ingress_replication_protocol_bgp: enum(True, False, required=False)
+  source_interface: str(required=False)
+  vnis: list(include('interface_nve_vni'), required=False)
+
+---
+interface_nve_vni:
+  vni: int()
+  associate_vrf: enum(True, False, required=False)
+
+---
+vlan:
+  id: int()
+  vn_segment: int(required=False)
+  name: str(required=False)
