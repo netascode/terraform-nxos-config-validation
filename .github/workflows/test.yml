@@ -20,7 +20,7 @@ jobs:
         uses: pre-commit/action@v3.0.0
 
       - name: Python Setup
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
 
       - name: Install iac-validate
         run: pip install iac-validate
