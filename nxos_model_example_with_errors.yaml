@@ -73,6 +73,7 @@ vrfs:
   - name: default
   - name: TENANT-1
     vni: 3901
+    rd: auto
     route_distinguisher: auto
     address_families:
       - address_family: 'ipv4_unicast'
@@ -163,3 +164,4 @@ vlans:
   - id: 102
     vn_segment: 102
     name: server_vlan_stretched
+    vrf: some_vrf
